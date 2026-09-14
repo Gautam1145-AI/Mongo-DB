@@ -1,0 +1,753 @@
+Mongo DB
+
+
+Last login: Mon Sep 14 13:45:38 on ttys000
+Matching Java Virtual Machines (1):
+    25 (arm64) "Oracle Corporation" - "Java SE 25" /Library/Java/JavaVirtualMachines/jdk-25.jdk/Contents/Home
+(base) gautam_kumar@Gautams-MacBook-Air ~ % mongosh "mongodb+srv://gautam.w5gnhat.mongodb.net/" --apiVersion 1 --username gautamprajapat5608_db_user --password Z925G2iQ8wYQuFM4
+Current Mongosh Log ID:	6aa7f89d85cc94235752e719
+Connecting to:		mongodb+srv://<credentials>@gautam.w5gnhat.mongodb.net/?appName=mongosh+2.10.0
+Using MongoDB:		8.0.32 (API Version 1)
+Using Mongosh:		2.10.0
+
+For mongosh info see: https://www.mongodb.com/docs/mongodb-shell/
+
+Atlas atlas-hlruvh-shard-0 [primary] test> db = db.getSiblingDB("ecommerce")
+ecommerce
+Atlas atlas-hlruvh-shard-0 [primary] ecommerce> db.createCollection("products")
+{ ok: 1 }
+Atlas atlas-hlruvh-shard-0 [primary] ecommerce> db.products.insertOne({
+|     name: "iPhone 15",
+|     category: "Smartphones",
+|     brand: "Apple",
+|     price: 69999,
+|     stock: 25,
+|     rating: 4.7
+| })
+{
+  acknowledged: true,
+  insertedId: ObjectId('6aa7f8b885cc94235752e71a')
+}
+Atlas atlas-hlruvh-shard-0 [primary] ecommerce> db.products.find()
+[
+  {
+    _id: ObjectId('6aa7b04a3ff43f0de9cf69fd'),
+    name: 'iPhone 15',
+    category: 'Smartphones',
+    brand: 'Apple',
+    price: 69999,
+    stock: 25,
+    rating: 4.7
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf69fe'),
+    name: 'iPhone 15',
+    category: 'Smartphones',
+    brand: 'Apple',
+    price: 69999,
+    stock: 25,
+    rating: 4.7,
+    inStock: true,
+    features: [ '6.1 inch Display', '48MP Camera', '128GB Storage', '5G' ]
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf69ff'),
+    name: 'Samsung Galaxy S24',
+    category: 'Smartphones',
+    brand: 'Samsung',
+    price: 74999,
+    stock: 18,
+    rating: 4.6,
+    inStock: true,
+    features: [ '6.2 inch AMOLED', '50MP Camera', '256GB Storage', '5G' ]
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf6a00'),
+    name: 'MacBook Air M3',
+    category: 'Laptops',
+    brand: 'Apple',
+    price: 114999,
+    stock: 10,
+    rating: 4.8,
+    inStock: true,
+    features: [ '13.6 inch Display', 'M3 Chip', '8GB RAM', '256GB SSD' ]
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf6a01'),
+    name: 'Dell Inspiron 15',
+    category: 'Laptops',
+    brand: 'Dell',
+    price: 65999,
+    stock: 15,
+    rating: 4.4,
+    inStock: true,
+    features: [ '15.6 inch Display', 'Intel i5', '16GB RAM', '512GB SSD' ]
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf6a02'),
+    name: 'Sony WH-1000XM5',
+    category: 'Headphones',
+    brand: 'Sony',
+    price: 29999,
+    stock: 35,
+    rating: 4.5,
+    inStock: true,
+    features: [ 'Noise Cancellation', 'Bluetooth', '30 Hours Battery' ]
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf6a03'),
+    name: 'Nike Air Max 270',
+    category: 'Shoes',
+    brand: 'Nike',
+    price: 12999,
+    stock: 40,
+    rating: 4.4,
+    inStock: true,
+    features: [ 'Air Cushioning', 'Mesh Upper', 'Lightweight' ]
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf6a04'),
+    name: 'Canon EOS 1500D',
+    category: 'Cameras',
+    brand: 'Canon',
+    price: 45999,
+    stock: 8,
+    rating: 4.3,
+    inStock: true,
+    features: [ '24.1MP Camera', 'WiFi', 'Full HD Video' ]
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf6a05'),
+    name: 'Logitech G102',
+    category: 'Gaming',
+    brand: 'Logitech',
+    price: 1999,
+    stock: 50,
+    rating: 4.6,
+    inStock: true,
+    features: [ '8000 DPI', 'RGB Lighting', '6 Buttons' ]
+  },
+  {
+    _id: ObjectId('6aa7f8b885cc94235752e71a'),
+    name: 'iPhone 15',
+    category: 'Smartphones',
+    brand: 'Apple',
+    price: 69999,
+    stock: 25,
+    rating: 4.7
+  }
+]
+Atlas atlas-hlruvh-shard-0 [primary] ecommerce> db.products.insertMany([
+|     {
+|         name: "iPhone 15",
+|         category: "Smartphones",
+|         brand: "Apple",
+|         price: 69999,
+|         stock: 25,
+|         rating: 4.7,
+|         inStock: true,
+|         features: [
+|             "6.1 inch Display",
+|             "48MP Camera",
+|             "128GB Storage",
+|             "5G"
+|         ]
+|     },
+| 
+|     {
+|         name: "Samsung Galaxy S24",
+|         category: "Smartphones",
+|         brand: "Samsung",
+|         price: 74999,
+|         stock: 18,
+|         rating: 4.6,
+|         inStock: true,
+|         features: [
+|             "6.2 inch AMOLED",
+|             "50MP Camera",
+|             "256GB Storage",
+|             "5G"
+|         ]
+|     },
+| 
+|     {
+|         name: "MacBook Air M3",
+|         category: "Laptops",
+|         brand: "Apple",
+|         price: 114999,
+|         stock: 10,
+|         rating: 4.8,
+|         inStock: true,
+|         features: [
+|             "13.6 inch Display",
+|             "M3 Chip",
+|             "8GB RAM",
+|             "256GB SSD"
+|         ]
+|     },
+| 
+|     {
+|         name: "Dell Inspiron 15",
+|         category: "Laptops",
+|         brand: "Dell",
+|         price: 65999,
+|         stock: 15,
+|         rating: 4.4,
+|         inStock: true,
+|         features: [
+|             "15.6 inch Display",
+|             "Intel i5",
+|             "16GB RAM",
+|             "512GB SSD"
+|         ]
+|     },
+| 
+|     {
+|         name: "Sony WH-1000XM5",
+|         category: "Headphones",
+|         brand: "Sony",
+|         price: 29999,
+|         stock: 35,
+|         rating: 4.5,
+|         inStock: true,
+|         features: [
+|             "Noise Cancellation",
+|             "Bluetooth",
+|             "30 Hours Battery"
+|         ]
+|     },
+| 
+|     {
+|         name: "Nike Air Max 270",
+|         category: "Shoes",
+|         brand: "Nike",
+|         price: 12999,
+|         stock: 40,
+|         rating: 4.4,
+|         inStock: true,
+|         features: [
+|             "Air Cushioning",
+|             "Mesh Upper",
+|             "Lightweight"
+|         ]
+|     },
+| 
+|     {
+|         name: "Canon EOS 1500D",
+|         category: "Cameras",
+|         brand: "Canon",
+|         price: 45999,
+|         stock: 8,
+|         rating: 4.3,
+|         inStock: true,
+|         features: [
+|             "24.1MP Camera",
+|             "WiFi",
+|             "Full HD Video"
+|         ]
+|     },
+| 
+|     {
+|         name: "Logitech G102",
+|         category: "Gaming",
+|         brand: "Logitech",
+|         price: 1999,
+|         stock: 50,
+|         rating: 4.6,
+|         inStock: true,
+|         features: [
+|             "8000 DPI",
+|             "RGB Lighting",
+|             "6 Buttons"
+|         ]
+|     }
+| ])
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('6aa7f8ce85cc94235752e71b'),
+    '1': ObjectId('6aa7f8ce85cc94235752e71c'),
+    '2': ObjectId('6aa7f8ce85cc94235752e71d'),
+    '3': ObjectId('6aa7f8ce85cc94235752e71e'),
+    '4': ObjectId('6aa7f8ce85cc94235752e71f'),
+    '5': ObjectId('6aa7f8ce85cc94235752e720'),
+    '6': ObjectId('6aa7f8ce85cc94235752e721'),
+    '7': ObjectId('6aa7f8ce85cc94235752e722')
+  }
+}
+Atlas atlas-hlruvh-shard-0 [primary] ecommerce> db.products.find()
+[
+  {
+    _id: ObjectId('6aa7b04a3ff43f0de9cf69fd'),
+    name: 'iPhone 15',
+    category: 'Smartphones',
+    brand: 'Apple',
+    price: 69999,
+    stock: 25,
+    rating: 4.7
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf69fe'),
+    name: 'iPhone 15',
+    category: 'Smartphones',
+    brand: 'Apple',
+    price: 69999,
+    stock: 25,
+    rating: 4.7,
+    inStock: true,
+    features: [ '6.1 inch Display', '48MP Camera', '128GB Storage', '5G' ]
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf69ff'),
+    name: 'Samsung Galaxy S24',
+    category: 'Smartphones',
+    brand: 'Samsung',
+    price: 74999,
+    stock: 18,
+    rating: 4.6,
+    inStock: true,
+    features: [ '6.2 inch AMOLED', '50MP Camera', '256GB Storage', '5G' ]
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf6a00'),
+    name: 'MacBook Air M3',
+    category: 'Laptops',
+    brand: 'Apple',
+    price: 114999,
+    stock: 10,
+    rating: 4.8,
+    inStock: true,
+    features: [ '13.6 inch Display', 'M3 Chip', '8GB RAM', '256GB SSD' ]
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf6a01'),
+    name: 'Dell Inspiron 15',
+    category: 'Laptops',
+    brand: 'Dell',
+    price: 65999,
+    stock: 15,
+    rating: 4.4,
+    inStock: true,
+    features: [ '15.6 inch Display', 'Intel i5', '16GB RAM', '512GB SSD' ]
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf6a02'),
+    name: 'Sony WH-1000XM5',
+    category: 'Headphones',
+    brand: 'Sony',
+    price: 29999,
+    stock: 35,
+    rating: 4.5,
+    inStock: true,
+    features: [ 'Noise Cancellation', 'Bluetooth', '30 Hours Battery' ]
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf6a03'),
+    name: 'Nike Air Max 270',
+    category: 'Shoes',
+    brand: 'Nike',
+    price: 12999,
+    stock: 40,
+    rating: 4.4,
+    inStock: true,
+    features: [ 'Air Cushioning', 'Mesh Upper', 'Lightweight' ]
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf6a04'),
+    name: 'Canon EOS 1500D',
+    category: 'Cameras',
+    brand: 'Canon',
+    price: 45999,
+    stock: 8,
+    rating: 4.3,
+    inStock: true,
+    features: [ '24.1MP Camera', 'WiFi', 'Full HD Video' ]
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf6a05'),
+    name: 'Logitech G102',
+    category: 'Gaming',
+    brand: 'Logitech',
+    price: 1999,
+    stock: 50,
+    rating: 4.6,
+    inStock: true,
+    features: [ '8000 DPI', 'RGB Lighting', '6 Buttons' ]
+  },
+  {
+    _id: ObjectId('6aa7f8b885cc94235752e71a'),
+    name: 'iPhone 15',
+    category: 'Smartphones',
+    brand: 'Apple',
+    price: 69999,
+    stock: 25,
+    rating: 4.7
+  },
+  {
+    _id: ObjectId('6aa7f8ce85cc94235752e71b'),
+    name: 'iPhone 15',
+    category: 'Smartphones',
+    brand: 'Apple',
+    price: 69999,
+    stock: 25,
+    rating: 4.7,
+    inStock: true,
+    features: [ '6.1 inch Display', '48MP Camera', '128GB Storage', '5G' ]
+  },
+  {
+    _id: ObjectId('6aa7f8ce85cc94235752e71c'),
+    name: 'Samsung Galaxy S24',
+    category: 'Smartphones',
+    brand: 'Samsung',
+    price: 74999,
+    stock: 18,
+    rating: 4.6,
+    inStock: true,
+    features: [ '6.2 inch AMOLED', '50MP Camera', '256GB Storage', '5G' ]
+  },
+  {
+    _id: ObjectId('6aa7f8ce85cc94235752e71d'),
+    name: 'MacBook Air M3',
+    category: 'Laptops',
+    brand: 'Apple',
+    price: 114999,
+    stock: 10,
+    rating: 4.8,
+    inStock: true,
+    features: [ '13.6 inch Display', 'M3 Chip', '8GB RAM', '256GB SSD' ]
+  },
+  {
+    _id: ObjectId('6aa7f8ce85cc94235752e71e'),
+    name: 'Dell Inspiron 15',
+    category: 'Laptops',
+    brand: 'Dell',
+    price: 65999,
+    stock: 15,
+    rating: 4.4,
+    inStock: true,
+    features: [ '15.6 inch Display', 'Intel i5', '16GB RAM', '512GB SSD' ]
+  },
+  {
+    _id: ObjectId('6aa7f8ce85cc94235752e71f'),
+    name: 'Sony WH-1000XM5',
+    category: 'Headphones',
+    brand: 'Sony',
+    price: 29999,
+    stock: 35,
+    rating: 4.5,
+    inStock: true,
+    features: [ 'Noise Cancellation', 'Bluetooth', '30 Hours Battery' ]
+  },
+  {
+    _id: ObjectId('6aa7f8ce85cc94235752e720'),
+    name: 'Nike Air Max 270',
+    category: 'Shoes',
+    brand: 'Nike',
+    price: 12999,
+    stock: 40,
+    rating: 4.4,
+    inStock: true,
+    features: [ 'Air Cushioning', 'Mesh Upper', 'Lightweight' ]
+  },
+  {
+    _id: ObjectId('6aa7f8ce85cc94235752e721'),
+    name: 'Canon EOS 1500D',
+    category: 'Cameras',
+    brand: 'Canon',
+    price: 45999,
+    stock: 8,
+    rating: 4.3,
+    inStock: true,
+    features: [ '24.1MP Camera', 'WiFi', 'Full HD Video' ]
+  },
+  {
+    _id: ObjectId('6aa7f8ce85cc94235752e722'),
+    name: 'Logitech G102',
+    category: 'Gaming',
+    brand: 'Logitech',
+    price: 1999,
+    stock: 50,
+    rating: 4.6,
+    inStock: true,
+    features: [ '8000 DPI', 'RGB Lighting', '6 Buttons' ]
+  }
+]
+Atlas atlas-hlruvh-shard-0 [primary] ecommerce> db.products.find({
+|     category: "Smartphones"
+| })
+[
+  {
+    _id: ObjectId('6aa7b04a3ff43f0de9cf69fd'),
+    name: 'iPhone 15',
+    category: 'Smartphones',
+    brand: 'Apple',
+    price: 69999,
+    stock: 25,
+    rating: 4.7
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf69fe'),
+    name: 'iPhone 15',
+    category: 'Smartphones',
+    brand: 'Apple',
+    price: 69999,
+    stock: 25,
+    rating: 4.7,
+    inStock: true,
+    features: [ '6.1 inch Display', '48MP Camera', '128GB Storage', '5G' ]
+  },
+  {
+    _id: ObjectId('6aa7b3193ff43f0de9cf69ff'),
+    name: 'Samsung Galaxy S24',
+    category: 'Smartphones',
+    brand: 'Samsung',
+    price: 74999,
+    stock: 18,
+    rating: 4.6,
+    inStock: true,
+    features: [ '6.2 inch AMOLED', '50MP Camera', '256GB Storage', '5G' ]
+  },
+  {
+    _id: ObjectId('6aa7f8b885cc94235752e71a'),
+    name: 'iPhone 15',
+    category: 'Smartphones',
+    brand: 'Apple',
+    price: 69999,
+    stock: 25,
+    rating: 4.7
+  },
+  {
+    _id: ObjectId('6aa7f8ce85cc94235752e71b'),
+    name: 'iPhone 15',
+    category: 'Smartphones',
+    brand: 'Apple',
+    price: 69999,
+    stock: 25,
+    rating: 4.7,
+    inStock: true,
+    features: [ '6.1 inch Display', '48MP Camera', '128GB Storage', '5G' ]
+  },
+  {
+    _id: ObjectId('6aa7f8ce85cc94235752e71c'),
+    name: 'Samsung Galaxy S24',
+    category: 'Smartphones',
+    brand: 'Samsung',
+    price: 74999,
+    stock: 18,
+    rating: 4.6,
+    inStock: true,
+    features: [ '6.2 inch AMOLED', '50MP Camera', '256GB Storage', '5G' ]
+  }
+]
+Atlas atlas-hlruvh-shard-0 [primary] ecommerce> use college
+switched to db college
+Atlas atlas-hlruvh-shard-0 [primary] college> db.createCollection("students")
+{ ok: 1 }
+Atlas atlas-hlruvh-shard-0 [primary] college> db.students.insertMany([
+|     {
+|         name: "Rahul",
+|         age: 21,
+|         gender: "Male",
+|         branch: "CSE",
+|         year: 3,
+|         cgpa: 8.7,
+|         skills: ["Java", "MongoDB", "DSA"],
+|         address: {
+|             city: "Jaipur",
+|             state: "Rajasthan"
+|         }
+|     },
+| 
+|     {
+|         name: "Priya",
+|         age: 20,
+|         gender: "Female",
+|         branch: "AI & DS",
+|         year: 2,
+|         cgpa: 9.1,
+|         skills: ["Python", "Machine Learning", "SQL"],
+|         address: {
+|             city: "Delhi",
+|             state: "Delhi"
+|         }
+|     },
+| 
+|     {
+|         name: "Aman",
+|         age: 22,
+|         gender: "Male",
+|         branch: "ECE",
+|         year: 4,
+|         cgpa: 7.9,
+|         skills: ["C++", "Embedded Systems"],
+|         address: {
+|             city: "Kota",
+|             state: "Rajasthan"
+|         }
+|     },
+| 
+|     {
+|         name: "Sneha",
+|         age: 21,
+|         gender: "Female",
+|         branch: "CSE",
+|         year: 3,
+|         cgpa: 8.9,
+|         skills: ["Java", "Spring Boot", "MongoDB"],
+|         address: {
+|             city: "Mumbai",
+|             state: "Maharashtra"
+|         }
+|     }
+| ])
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('6aa7f91d85cc94235752e723'),
+    '1': ObjectId('6aa7f91d85cc94235752e724'),
+    '2': ObjectId('6aa7f91d85cc94235752e725'),
+    '3': ObjectId('6aa7f91d85cc94235752e726')
+  }
+}
+Atlas atlas-hlruvh-shard-0 [primary] college> db.students.find()
+[
+  {
+    _id: ObjectId('6aa7b4703ff43f0de9cf6a06'),
+    name: 'Rahul',
+    age: 21,
+    gender: 'Male',
+    branch: 'CSE',
+    year: 3,
+    cgpa: 8.7,
+    skills: [ 'Java', 'MongoDB', 'DSA' ],
+    address: { city: 'Jaipur', state: 'Rajasthan' }
+  },
+  {
+    _id: ObjectId('6aa7b4703ff43f0de9cf6a07'),
+    name: 'Priya',
+    age: 20,
+    gender: 'Female',
+    branch: 'AI & DS',
+    year: 2,
+    cgpa: 9.1,
+    skills: [ 'Python', 'Machine Learning', 'SQL' ],
+    address: { city: 'Delhi', state: 'Delhi' }
+  },
+  {
+    _id: ObjectId('6aa7b4703ff43f0de9cf6a08'),
+    name: 'Aman',
+    age: 22,
+    gender: 'Male',
+    branch: 'ECE',
+    year: 4,
+    cgpa: 7.9,
+    skills: [ 'C++', 'Embedded Systems' ],
+    address: { city: 'Kota', state: 'Rajasthan' }
+  },
+  {
+    _id: ObjectId('6aa7b4703ff43f0de9cf6a09'),
+    name: 'Sneha',
+    age: 21,
+    gender: 'Female',
+    branch: 'CSE',
+    year: 3,
+    cgpa: 8.9,
+    skills: [ 'Java', 'Spring Boot', 'MongoDB' ],
+    address: { city: 'Mumbai', state: 'Maharashtra' }
+  },
+  {
+    _id: ObjectId('6aa7f91d85cc94235752e723'),
+    name: 'Rahul',
+    age: 21,
+    gender: 'Male',
+    branch: 'CSE',
+    year: 3,
+    cgpa: 8.7,
+    skills: [ 'Java', 'MongoDB', 'DSA' ],
+    address: { city: 'Jaipur', state: 'Rajasthan' }
+  },
+  {
+    _id: ObjectId('6aa7f91d85cc94235752e724'),
+    name: 'Priya',
+    age: 20,
+    gender: 'Female',
+    branch: 'AI & DS',
+    year: 2,
+    cgpa: 9.1,
+    skills: [ 'Python', 'Machine Learning', 'SQL' ],
+    address: { city: 'Delhi', state: 'Delhi' }
+  },
+  {
+    _id: ObjectId('6aa7f91d85cc94235752e725'),
+    name: 'Aman',
+    age: 22,
+    gender: 'Male',
+    branch: 'ECE',
+    year: 4,
+    cgpa: 7.9,
+    skills: [ 'C++', 'Embedded Systems' ],
+    address: { city: 'Kota', state: 'Rajasthan' }
+  },
+  {
+    _id: ObjectId('6aa7f91d85cc94235752e726'),
+    name: 'Sneha',
+    age: 21,
+    gender: 'Female',
+    branch: 'CSE',
+    year: 3,
+    cgpa: 8.9,
+    skills: [ 'Java', 'Spring Boot', 'MongoDB' ],
+    address: { city: 'Mumbai', state: 'Maharashtra' }
+  }
+]
+Atlas atlas-hlruvh-shard-0 [primary] college> db.students.find({
+|     branch: "CSE"
+| })
+[
+  {
+    _id: ObjectId('6aa7b4703ff43f0de9cf6a06'),
+    name: 'Rahul',
+    age: 21,
+    gender: 'Male',
+    branch: 'CSE',
+    year: 3,
+    cgpa: 8.7,
+    skills: [ 'Java', 'MongoDB', 'DSA' ],
+    address: { city: 'Jaipur', state: 'Rajasthan' }
+  },
+  {
+    _id: ObjectId('6aa7b4703ff43f0de9cf6a09'),
+    name: 'Sneha',
+    age: 21,
+    gender: 'Female',
+    branch: 'CSE',
+    year: 3,
+    cgpa: 8.9,
+    skills: [ 'Java', 'Spring Boot', 'MongoDB' ],
+    address: { city: 'Mumbai', state: 'Maharashtra' }
+  },
+  {
+    _id: ObjectId('6aa7f91d85cc94235752e723'),
+    name: 'Rahul',
+    age: 21,
+    gender: 'Male',
+    branch: 'CSE',
+    year: 3,
+    cgpa: 8.7,
+    skills: [ 'Java', 'MongoDB', 'DSA' ],
+    address: { city: 'Jaipur', state: 'Rajasthan' }
+  },
+  {
+    _id: ObjectId('6aa7f91d85cc94235752e726'),
+    name: 'Sneha',
+    age: 21,
+    gender: 'Female',
+    branch: 'CSE',
+    year: 3,
+    cgpa: 8.9,
+    skills: [ 'Java', 'Spring Boot', 'MongoDB' ],
+    address: { city: 'Mumbai', state: 'Maharashtra' }
+  }
+]
+Atlas atlas-hlruvh-shard-0 [primary] college> 
+
