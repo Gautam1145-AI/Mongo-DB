@@ -1,0 +1,201 @@
+use Poornima
+
+db.createCollection("Student")
+
+db.Student.insertMany([
+    {
+        studentId: 101,
+        name: "Aarav Sharma",
+        department: "CSE",
+        graduationYear: 2026,
+        cgpa: 8.7,
+        address: {
+            city: "Jaipur",
+            state: "Rajasthan",
+            pincode: 302017
+        },
+        skills: ["Java", "MongoDB", "DSA"]
+    },
+    {
+        studentId: 102,
+        name: "Priya Verma",
+        department: "AI & DS",
+        graduationYear: 2027,
+        cgpa: 9.1,
+        address: {
+            city: "Delhi",
+            state: "Delhi",
+            pincode: 110001
+        },
+        skills: ["Python", "Machine Learning", "SQL"]
+    },
+    {
+        studentId: 103,
+        name: "Rahul Meena",
+        department: "CSE",
+        graduationYear: 2026,
+        cgpa: 8.2,
+        address: {
+            city: "Kota",
+            state: "Rajasthan",
+            pincode: 324001
+        },
+        skills: ["C++", "DSA", "Git"]
+    },
+    {
+        studentId: 104,
+        name: "Sneha Gupta",
+        department: "ECE",
+        graduationYear: 2025,
+        cgpa: 8.5,
+        address: {
+            city: "Lucknow",
+            state: "Uttar Pradesh",
+            pincode: 226001
+        },
+        skills: ["Embedded Systems", "C", "Arduino"]
+    },
+    {
+        studentId: 105,
+        name: "Aditya Singh",
+        department: "IT",
+        graduationYear: 2026,
+        cgpa: 7.9,
+        address: {
+            city: "Agra",
+            state: "Uttar Pradesh",
+            pincode: 282001
+        },
+        skills: ["JavaScript", "HTML", "CSS"]
+    },
+    {
+        studentId: 106,
+        name: "Ananya Joshi",
+        department: "AI & DS",
+        graduationYear: 2027,
+        cgpa: 9.3,
+        address: {
+            city: "Udaipur",
+            state: "Rajasthan",
+            pincode: 313001
+        },
+        skills: ["Python", "Deep Learning", "TensorFlow"]
+    },
+    {
+        studentId: 107,
+        name: "Karan Yadav",
+        department: "CSE",
+        graduationYear: 2025,
+        cgpa: 7.6,
+        address: {
+            city: "Ajmer",
+            state: "Rajasthan",
+            pincode: 305001
+        },
+        skills: ["Java", "Spring Boot", "MySQL"]
+    },
+    {
+        studentId: 108,
+        name: "Neha Agarwal",
+        department: "IT",
+        graduationYear: 2026,
+        cgpa: 8.9,
+        address: {
+            city: "Bhopal",
+            state: "Madhya Pradesh",
+            pincode: 462001
+        },
+        skills: ["React", "JavaScript", "Node.js"]
+    },
+    {
+        studentId: 109,
+        name: "Vivek Kumar",
+        department: "ECE",
+        graduationYear: 2025,
+        cgpa: 7.8,
+        address: {
+            city: "Patna",
+            state: "Bihar",
+            pincode: 800001
+        },
+        skills: ["C", "MATLAB", "Arduino"]
+    },
+    {
+        studentId: 110,
+        name: "Riya Sharma",
+        department: "CSE",
+        graduationYear: 2027,
+        cgpa: 9.0,
+        address: {
+            city: "Jaipur",
+            state: "Rajasthan",
+            pincode: 302020
+        },
+        skills: ["Python", "Java", "MongoDB"]
+    },
+    {
+        studentId: 111,
+        name: "Mohit Jain",
+        department: "AI & DS",
+        graduationYear: 2026,
+        cgpa: 8.4,
+        address: {
+            city: "Jodhpur",
+            state: "Rajasthan",
+            pincode: 342001
+        },
+        skills: ["Python", "Pandas", "Data Analysis"]
+    },
+    {
+        studentId: 112,
+        name: "Simran Kaur",
+        department: "IT",
+        graduationYear: 2025,
+        cgpa: 8.1,
+        address: {
+            city: "Amritsar",
+            state: "Punjab",
+            pincode: 143001
+        },
+        skills: ["HTML", "CSS", "React"]
+    },
+    {
+        studentId: 113,
+        name: "Arjun Patel",
+        department: "CSE",
+        graduationYear: 2026,
+        cgpa: 8.8,
+        address: {
+            city: "Ahmedabad",
+            state: "Gujarat",
+            pincode: 380001
+        },
+        skills: ["C++", "DSA", "MongoDB"]
+    },
+    {
+        studentId: 114,
+        name: "Pooja Mishra",
+        department: "ECE",
+        graduationYear: 2027,
+        cgpa: 8.6,
+        address: {
+            city: "Kanpur",
+            state: "Uttar Pradesh",
+            pincode: 208001
+        },
+        skills: ["C", "IoT", "Embedded Systems"]
+    },
+    {
+        studentId: 115,
+        name: "Dev Kumar",
+        department: "AI & DS",
+        graduationYear: 2025,
+        cgpa: 9.2,
+        address: {
+            city: "Noida",
+            state: "Uttar Pradesh",
+            pincode: 201301
+        },
+        skills: ["Python", "Machine Learning", "SQL"]
+    }
+])
