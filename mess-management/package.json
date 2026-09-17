@@ -1,0 +1,10 @@
+{
+  "name": "mess-management-workspace",
+  "version": "1.0.0",
+  "description": "College MongoDB project workspace: Mess Menu, Feedback & Food-Wastage Tracker",
+  "scripts": {
+    "start": "npm --prefix mess-tracker start",
+    "seed": "npm --prefix mess-tracker run seed",
+    "install:all": "npm --prefix mess-tracker install"
+  }
+}
