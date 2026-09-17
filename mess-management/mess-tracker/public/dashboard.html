@@ -3,13 +3,1412 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="College Mess Menu, Feedback & Food-Wastage Tracker">
+  <meta name="description" content="College Mess Menu, Feedback & Food-Wastage Tracker - Real-time analytics, time series meal logging, and student feedback portal.">
   <title>Mess Menu, Feedback & Food-Wastage Tracker</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      --bg-base: #0f172a;
+      --bg-surface: #1e293b;
+      --bg-surface-elevated: #283548;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-success: #34d399;
+      --accent-warning: #fbbf24;
+      --accent-danger: #f87171;
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      line-height: 1.5;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-card);
+      backdrop-filter: blur(12px);
+    }
+
+    .header-left h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      background: linear-gradient(135deg, #ffffff 40%, var(--accent-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-left p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--accent-success);
+      box-shadow: 0 0 8px var(--accent-success);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+      gap: 24px;
+    }
+
+    .card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.2s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Chart Container */
+    .chart-container {
+      position: relative;
+      height: 320px;
+      width: 100%;
+    }
+
+    /* Tables & Lists */
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    .custom-table th {
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .custom-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-secondary);
+    }
+
+    .custom-table tr:hover td {
+      background-color: rgba(255, 255, 255, 0.02);
+      color: var(--text-primary);
+    }
+
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+    }
+
+    .pill-badge.tag {
+      background: rgba(129, 140, 248, 0.15);
+      color: #a5b4fc;
+      border: 1px solid rgba(129, 140, 248, 0.25);
+    }
+
+    .pill-badge.count {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--accent-success);
+      font-weight: 700;
+    }
+
+    /* Tags List */
+    .tags-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-top: 8px;
+    }
+
+    .tag-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+
+    .tag-item:hover {
+      border-color: var(--accent-primary);
+      transform: translateY(-1px);
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .form-control {
+      background-color: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .items-builder {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px dashed var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    .item-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0369a1, #075985);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-surface-elevated);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: #334155;
+    }
+
+    .btn-danger-sm {
+      background: rgba(248, 113, 113, 0.15);
+      color: var(--accent-danger);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+    }
+
+    .btn-danger-sm:hover {
+      background: rgba(248, 113, 113, 0.3);
+    }
+
+    /* Alert Banner */
+    .alert-banner {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .alert-banner.success {
+      background: rgba(52, 211, 153, 0.15);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      color: var(--accent-success);
+      display: block;
+    }
+
+    .alert-banner.error {
+      background: rgba(248, 113, 113, 0.15);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      color: var(--accent-danger);
+      display: block;
+    }
+
+    /* Navigation Tabs */
+    .nav-bar {
+      display: flex;
+      gap: 10px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 6px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .nav-tab {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-tab:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-tab.active {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(2, 132, 199, 0.4);
+    }
+
+    /* Trend Controls Toolbar */
+    .trend-toolbar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 14px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+    }
+
+    .toolbar-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .toolbar-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toolbar-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-group {
+      display: inline-flex;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .btn-toggle {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-toggle:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .btn-toggle.active {
+      background: var(--accent-primary);
+      color: #0f172a;
+      box-shadow: 0 1px 4px rgba(56, 189, 248, 0.4);
+    }
+
+    .select-compact {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 500;
+      outline: none;
+    }
+
+    /* KPI Summary Chips */
+    .trend-kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .kpi-chip {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .kpi-chip-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-chip-val {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+    }
+
+    @media (max-width: 768px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .row-2 {
+        grid-template-columns: 1fr;
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .nav-bar {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
-  <main>
-    <h1>Mess Menu, Feedback & Food-Wastage Tracker</h1>
-    <p>Dashboard frontend. Run the Express server to access the full application.</p>
-  </main>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="header-left">
+        <h1>Mess Menu, Feedback & Food-Wastage Tracker</h1>
+        <p>MongoDB Native Time Series Analytics & Student Sentiment Engine</p>
+      </div>
+      <div class="header-badge">
+        <span class="pulse-dot"></span>
+        <span>MongoDB Time Series Active</span>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs / Section Selector -->
+    <nav class="nav-bar">
+      <button class="nav-tab active" id="tabAnalytics" onclick="switchSection('analytics')">
+        📈 Analytics & Insights
+      </button>
+      <button class="nav-tab" id="tabOperations" onclick="switchSection('operations')">
+        📝 Staff Meal Logger & Student Feedback
+      </button>
+    </nav>
+
+    <!-- Analytics Section -->
+    <div id="sectionAnalytics">
+      <!-- Top Section: Dynamic Wastage Trend Chart & Correlation Overview -->
+      <div class="grid-2">
+        <!-- Dynamic Wastage Trend Line Chart -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title" id="trendCardTitle">📈 Dynamic Food Wastage Trend</div>
+              <div class="card-subtitle" id="trendCardSubtitle">Every day meals & time series tracking (/api/analytics/wastage-trend)</div>
+            </div>
+            <button class="btn btn-secondary" id="refreshTrendBtn" onclick="loadWastageTrend()" style="font-size: 0.8rem; padding: 6px 12px;">
+              ↻ Refresh
+            </button>
+          </div>
+
+          <!-- Dynamic Controls Toolbar -->
+          <div class="trend-toolbar">
+            <div class="toolbar-row">
+              <div class="toolbar-group">
+                <span class="toolbar-label">Timeframe:</span>
+                <div class="btn-group" id="timeframeGroup">
+                  <button class="btn-toggle active" data-val="daily" onclick="setTimeframe('daily')">📅 Daily (Every Day)</button>
+                  <button class="btn-toggle" data-val="weekly" onclick="setTimeframe('weekly')">📆 Weekly</button>
+                </div>
+              </div>
+
+              <div class="toolbar-group">
+                <span class="toolbar-label">Range:</span>
+                <select id="rangeSelect" class="select-compact" onchange="setRange(this.value)">
+                  <option value="7">Last 7 Days</option>
+                  <option value="14" selected>Last 14 Days</option>
+                  <option value="30">Last 30 Days</option>
+                  <option value="60">Last 60 Days</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="toolbar-row">
+              <div class="toolbar-group">
+                <span class="toolbar-label">Meal Type:</span>
+                <div class="btn-group" id="mealTypeGroup">
+                  <button class="btn-toggle active" data-meal="all" onclick="setMealType('all')">All Meals</button>
+                  <button class="btn-toggle" data-meal="breakfast" onclick="setMealType('breakfast')">🍳 Breakfast</button>
+                  <button class="btn-toggle" data-meal="lunch" onclick="setMealType('lunch')">🍲 Lunch</button>
+                  <button class="btn-toggle" data-meal="snacks" onclick="setMealType('snacks')">☕ Snacks</button>
+                  <button class="btn-toggle" data-meal="dinner" onclick="setMealType('dinner')">🍽️ Dinner</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic KPI Chips -->
+          <div class="trend-kpis">
+            <div class="kpi-chip">
+              <span class="kpi-chip-label">Total Wastage</span>
+              <span class="kpi-chip-val" id="kpiTotalWastage">-- kg</span>
+            </div>
+            <div class="kpi-chip">
+              <span class="kpi-chip-label">Average Wastage</span>
+              <span class="kpi-chip-val" id="kpiAvgWastage">-- kg</span>
+            </div>
+            <div class="kpi-chip">
+              <span class="kpi-chip-label">Meals Analyzed</span>
+              <span class="kpi-chip-val" id="kpiMealsCount">--</span>
+            </div>
+            <div class="kpi-chip">
+              <span class="kpi-chip-label">Peak Wastage Day</span>
+              <span class="kpi-chip-val" id="kpiPeakDay" style="font-size: 0.95rem; color: #f87171;">--</span>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <canvas id="wastageChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Meal Type Correlation Table -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">⚖️ Meal Correlation: Wastage vs Satisfaction</div>
+              <div class="card-subtitle">Joined via $lookup on Time Series /api/analytics/item-correlation</div>
+            </div>
+          </div>
+          <div style="overflow-x: auto;">
+            <table class="custom-table" id="correlationTable">
+              <thead>
+                <tr>
+                  <th>Meal Type</th>
+                  <th>Avg Wastage (kg)</th>
+                  <th>Avg Rating (1-5)</th>
+                  <th>Meals Analyzed</th>
+                </tr>
+              </thead>
+              <tbody id="correlationBody">
+                <tr><td colspan="4" style="text-align: center;">Loading correlation data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Middle Section: Top Wasted Items & Top Tags -->
+      <div class="grid-2" style="margin-top: 28px;">
+        <!-- Top Wasted Items -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">📊 Top Prepared / Served Items</div>
+              <div class="card-subtitle">$unwind on embedded snapshot itemsServed (/api/analytics/top-wasted-items)</div>
+            </div>
+          </div>
+          <div style="overflow-x: auto;">
+            <table class="custom-table" id="topWastedTable">
+              <thead>
+                <tr>
+                  <th>Item Name</th>
+                  <th>Total Served (kg)</th>
+                  <th>Times Served</th>
+                </tr>
+              </thead>
+              <tbody id="topWastedBody">
+                <tr><td colspan="3" style="text-align: center;">Loading items...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Top Student Feedback Tags -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">🏷️ Top Student Feedback Tags</div>
+              <div class="card-subtitle">Sentiment count on feedback collection (/api/analytics/top-tags)</div>
+            </div>
+          </div>
+          <div class="tags-grid" id="topTagsContainer">
+            <p style="color: var(--text-muted);">Loading feedback tags...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Operations Section: Staff Logger & Student Feedback Forms -->
+    <div id="sectionOperations" style="display: none;">
+      <!-- Staff Form: Log a Meal -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">📝 Staff Meal Logger</div>
+            <div class="card-subtitle">Records a time series entry with embedded itemsServed snapshot</div>
+          </div>
+        </div>
+
+        <div id="mealAlert" class="alert-banner"></div>
+
+        <form id="mealLogForm" onsubmit="handleMealSubmit(event)">
+          <div class="row-2">
+            <div class="form-group">
+              <label for="mealType">Meal Type *</label>
+              <select id="mealType" class="form-control" required>
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch" selected>Lunch</option>
+                <option value="snacks">Snacks</option>
+                <option value="dinner">Dinner</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="wastageKg">Measured Wastage (kg) *</label>
+              <input type="number" id="wastageKg" class="form-control" step="0.1" min="0" placeholder="e.g. 8.5" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Items Served (Snapshot of dishes prepared)</label>
+            <div class="items-builder" id="itemsBuilderContainer">
+              <!-- Item rows inserted here -->
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="addItemRow()" style="font-size: 0.8rem; padding: 6px 12px;">
+              + Add Item
+            </button>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 12px;" id="mealSubmitBtn">
+            Save Meal Log to Time Series
+          </button>
+        </form>
+      </div>
+
+      <!-- Student Form: Submit Feedback -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">⭐ Student Feedback Portal</div>
+            <div class="card-subtitle">Submits rating and qualitative tags referencing mealLogId</div>
+          </div>
+        </div>
+
+        <div id="feedbackAlert" class="alert-banner"></div>
+
+        <form id="feedbackForm" onsubmit="handleFeedbackSubmit(event)">
+          <div class="form-group">
+            <label for="feedbackMealSelect">Select Recent Meal *</label>
+            <select id="feedbackMealSelect" class="form-control" required>
+              <option value="">Loading recent meals...</option>
+            </select>
+          </div>
+
+          <div class="row-2">
+            <div class="form-group">
+              <label for="feedbackRating">Rating (1 to 5 Stars) *</label>
+              <select id="feedbackRating" class="form-control" required>
+                <option value="5">★★★★★ - 5 (Excellent)</option>
+                <option value="4">★★★★☆ - 4 (Good)</option>
+                <option value="3">★★★☆☆ - 3 (Average)</option>
+                <option value="2">★★☆☆☆ - 2 (Poor)</option>
+                <option value="1">★☆☆☆☆ - 1 (Very Bad)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="feedbackTag">Feedback Tag *</label>
+              <select id="feedbackTag" class="form-control" required>
+                <option value="loved it">loved it</option>
+                <option value="perfect portion">perfect portion</option>
+                <option value="too spicy">too spicy</option>
+                <option value="cold">cold</option>
+                <option value="bland">bland</option>
+                <option value="undercooked">undercooked</option>
+                <option value="too oily">too oily</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="feedbackComment">Comment</label>
+            <textarea id="feedbackComment" class="form-control" rows="3" placeholder="Tell us how the food was..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 12px;" id="feedbackSubmitBtn">
+            Submit Student Feedback
+          </button>
+        </form>
+      </div>
+    </div>
+    </div> <!-- /#sectionOperations -->
+  </div> <!-- /.container -->
+
+  <script>
+    let trendChartInstance = null;
+    let menuCatalog = [];
+
+    // State for Dynamic Analytics Trend
+    let currentTimeframe = 'daily';
+    let currentMealType = 'all';
+    let currentDays = 14;
+    let currentWeeks = 10;
+
+    // Navigation Tab Switching
+    function switchSection(section) {
+      const secAnalytics = document.getElementById('sectionAnalytics');
+      const secOperations = document.getElementById('sectionOperations');
+      const tabs = document.querySelectorAll('.nav-tab');
+      tabs.forEach(t => t.classList.remove('active'));
+
+      if (section === 'analytics') {
+        document.getElementById('tabAnalytics').classList.add('active');
+        secAnalytics.style.display = 'block';
+        secOperations.style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (section === 'operations') {
+        document.getElementById('tabOperations').classList.add('active');
+        secAnalytics.style.display = 'none';
+        secOperations.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    // Dynamic Chart Controls
+    function setTimeframe(tf) {
+      currentTimeframe = tf;
+      document.querySelectorAll('#timeframeGroup .btn-toggle').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-val') === tf);
+      });
+
+      const rangeSelect = document.getElementById('rangeSelect');
+      if (tf === 'daily') {
+        rangeSelect.innerHTML = `
+          <option value="7">Last 7 Days</option>
+          <option value="14" selected>Last 14 Days</option>
+          <option value="30">Last 30 Days</option>
+          <option value="60">Last 60 Days</option>
+        `;
+        currentDays = 14;
+      } else {
+        rangeSelect.innerHTML = `
+          <option value="5">Last 5 Weeks</option>
+          <option value="10" selected>Last 10 Weeks</option>
+          <option value="20">Last 20 Weeks</option>
+        `;
+        currentWeeks = 10;
+      }
+
+      loadWastageTrend();
+    }
+
+    function setMealType(meal) {
+      currentMealType = meal;
+      document.querySelectorAll('#mealTypeGroup .btn-toggle').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-meal') === meal);
+      });
+      loadWastageTrend();
+    }
+
+    function setRange(val) {
+      const num = parseInt(val, 10);
+      if (currentTimeframe === 'daily') {
+        currentDays = num;
+      } else {
+        currentWeeks = num;
+      }
+      loadWastageTrend();
+    }
+
+    // Initialize Dashboard
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadMenuCatalog();
+      addItemRow(); // Default initial row
+      await refreshAllData();
+    });
+
+    async function refreshAllData() {
+      await Promise.all([
+        loadWastageTrend(),
+        loadItemCorrelation(),
+        loadTopWastedItems(),
+        loadTopTags(),
+        loadRecentMealsForFeedback()
+      ]);
+    }
+
+    // Load master catalog for staff dropdown
+    async function loadMenuCatalog() {
+      try {
+        const res = await fetch('/api/menu-items');
+        if (res.ok) {
+          menuCatalog = await res.json();
+        }
+      } catch (err) {
+        console.warn('Could not load menu items, using defaults:', err);
+        menuCatalog = [
+          { name: 'Rice' }, { name: 'Dal' }, { name: 'Roti' },
+          { name: 'Paneer Curry' }, { name: 'Mixed Veg' }, { name: 'Curd' }
+        ];
+      }
+    }
+
+    // Dynamic Items Served rows
+    function addItemRow() {
+      const container = document.getElementById('itemsBuilderContainer');
+      const rowId = 'row-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4);
+      
+      const div = document.createElement('div');
+      div.className = 'item-row';
+      div.id = rowId;
+
+      let optionsHtml = '';
+      if (menuCatalog.length > 0) {
+        optionsHtml = menuCatalog.map(item => `<option value="${item.name}">${item.name}</option>`).join('');
+      } else {
+        optionsHtml = `
+          <option value="Rice">Rice</option>
+          <option value="Dal">Dal</option>
+          <option value="Roti">Roti</option>
+          <option value="Paneer Curry">Paneer Curry</option>
+          <option value="Mixed Veg">Mixed Veg</option>
+          <option value="Curd">Curd</option>
+        `;
+      }
+
+      div.innerHTML = `
+        <select class="form-control item-name" required>
+          ${optionsHtml}
+        </select>
+        <input type="number" class="form-control item-qty" step="0.1" min="0.1" placeholder="Qty (kg)" value="15" required>
+        <button type="button" class="btn-danger-sm" onclick="removeItemRow('${rowId}')">✕</button>
+      `;
+      container.appendChild(div);
+    }
+
+    function removeItemRow(id) {
+      const row = document.getElementById(id);
+      const container = document.getElementById('itemsBuilderContainer');
+      if (container.children.length > 1) {
+        if (row) row.remove();
+      } else {
+        alert('At least one item must be served.');
+      }
+    }
+
+    // 1. Dynamic Wastage Trend Chart
+    async function loadWastageTrend() {
+      const refreshBtn = document.getElementById('refreshTrendBtn');
+      if (refreshBtn) refreshBtn.innerText = '↻ Loading...';
+
+      try {
+        const rangeParam = currentTimeframe === 'daily' ? `days=${currentDays}` : `weeks=${currentWeeks}`;
+        const url = `/api/analytics/wastage-trend?timeframe=${currentTimeframe}&${rangeParam}&mealType=${currentMealType}`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        renderWastageChart(data);
+        updateTrendKpis(data);
+      } catch (err) {
+        console.error('Failed to load wastage trend:', err);
+      } finally {
+        if (refreshBtn) refreshBtn.innerText = '↻ Refresh';
+      }
+    }
+
+    function updateTrendKpis(data) {
+      if (!data || data.length === 0) {
+        document.getElementById('kpiTotalWastage').innerText = '0 kg';
+        document.getElementById('kpiAvgWastage').innerText = '0 kg';
+        document.getElementById('kpiMealsCount').innerText = '0';
+        document.getElementById('kpiPeakDay').innerText = 'None';
+        return;
+      }
+
+      let totalWastage = 0;
+      let totalMeals = 0;
+      let peakPoint = null;
+      let peakVal = -1;
+
+      for (const item of data) {
+        const w = item.totalWastageKg || item.avgWastageKg || 0;
+        totalWastage += w;
+        totalMeals += (item.logCount || 1);
+        if (w > peakVal) {
+          peakVal = w;
+          peakPoint = item;
+        }
+      }
+
+      const isDaily = currentTimeframe === 'daily';
+      const timeKeys = new Set(data.map(d => isDaily ? d.date : d.week));
+      const avgPerPeriod = timeKeys.size > 0 ? (totalWastage / timeKeys.size).toFixed(1) : '0';
+
+      document.getElementById('kpiTotalWastage').innerText = `${totalWastage.toFixed(1)} kg`;
+      document.getElementById('kpiAvgWastage').innerText = `${avgPerPeriod} kg / ${isDaily ? 'day' : 'week'}`;
+      document.getElementById('kpiMealsCount').innerText = `${totalMeals} logged`;
+
+      if (peakPoint) {
+        const label = isDaily ? peakPoint.date : `Week ${peakPoint.week}`;
+        const mealPrefix = peakPoint.mealType ? peakPoint.mealType + ': ' : '';
+        document.getElementById('kpiPeakDay').innerText = `${label} (${mealPrefix}${peakVal.toFixed(1)} kg)`;
+      } else {
+        document.getElementById('kpiPeakDay').innerText = '--';
+      }
+    }
+
+    function renderWastageChart(data) {
+      const ctx = document.getElementById('wastageChart').getContext('2d');
+      if (trendChartInstance) {
+        trendChartInstance.destroy();
+      }
+
+      const isDaily = currentTimeframe === 'daily';
+      
+      const titleEl = document.getElementById('trendCardTitle');
+      const subEl = document.getElementById('trendCardSubtitle');
+      if (titleEl && subEl) {
+        const mealLabel = currentMealType === 'all' ? 'All Meals' : currentMealType.toUpperCase();
+        if (isDaily) {
+          titleEl.innerText = `📈 Daily Food Wastage Trend (${mealLabel})`;
+          subEl.innerText = `Showing every day meal logs over the last ${currentDays} days`;
+        } else {
+          titleEl.innerText = `📈 Weekly Food Wastage Trend (${mealLabel})`;
+          subEl.innerText = `Aggregated weekly over the last ${currentWeeks} weeks`;
+        }
+      }
+
+      if (!data || data.length === 0) {
+        trendChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: { labels: ['No records found in this range'], datasets: [] },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
+        return;
+      }
+
+      const timeKeys = isDaily 
+        ? [...new Set(data.map(d => d.date))].sort()
+        : [...new Set(data.map(d => d.week))].sort((a, b) => a - b);
+
+      const displayLabels = timeKeys.map(k => {
+        if (isDaily) {
+          const parts = String(k).split('-');
+          if (parts.length === 3) {
+            const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+          }
+          return k;
+        }
+        return `Week ${k}`;
+      });
+
+      const MEAL_PALETTES = {
+        breakfast: { color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.12)', label: 'Breakfast' },
+        lunch: { color: '#38bdf8', bg: 'rgba(56, 189, 248, 0.15)', label: 'Lunch' },
+        snacks: { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.12)', label: 'Snacks' },
+        dinner: { color: '#34d399', bg: 'rgba(52, 211, 153, 0.12)', label: 'Dinner' }
+      };
+
+      let datasets = [];
+
+      if (currentMealType === 'all') {
+        // Multi-line chart: Breakfast, Lunch, Snacks, Dinner
+        const mealOrder = ['breakfast', 'lunch', 'snacks', 'dinner'];
+        mealOrder.forEach(meal => {
+          const palette = MEAL_PALETTES[meal];
+          const seriesData = timeKeys.map(key => {
+            const found = data.find(d => (isDaily ? d.date === key : d.week === key) && d.mealType === meal);
+            return found ? found.totalWastageKg : 0;
+          });
+
+          if (seriesData.some(v => v > 0)) {
+            datasets.push({
+              label: `${palette.label} (kg)`,
+              data: seriesData,
+              borderColor: palette.color,
+              backgroundColor: palette.bg,
+              borderWidth: 2.5,
+              tension: 0.35,
+              fill: false,
+              pointBackgroundColor: palette.color,
+              pointRadius: 4,
+              pointHoverRadius: 6
+            });
+          }
+        });
+
+        // Combined Total Line
+        const totalSeries = timeKeys.map(key => {
+          const matches = data.filter(d => (isDaily ? d.date === key : d.week === key));
+          return Number(matches.reduce((acc, m) => acc + (m.totalWastageKg || 0), 0).toFixed(2));
+        });
+
+        datasets.unshift({
+          label: 'Total Daily Wastage (kg)',
+          data: totalSeries,
+          borderColor: '#ffffff',
+          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          borderWidth: 3,
+          borderDash: [4, 4],
+          tension: 0.35,
+          fill: true,
+          pointBackgroundColor: '#ffffff',
+          pointRadius: 5,
+          pointHoverRadius: 7
+        });
+      } else {
+        // Single meal selected: Average and Total lines
+        const palette = MEAL_PALETTES[currentMealType] || { color: '#38bdf8', bg: 'rgba(56, 189, 248, 0.15)', label: currentMealType };
+        const avgData = timeKeys.map(key => {
+          const found = data.find(d => (isDaily ? d.date === key : d.week === key));
+          return found ? found.avgWastageKg : 0;
+        });
+        const totalData = timeKeys.map(key => {
+          const found = data.find(d => (isDaily ? d.date === key : d.week === key));
+          return found ? found.totalWastageKg : 0;
+        });
+
+        datasets = [
+          {
+            label: `Avg ${palette.label} Wastage (kg)`,
+            data: avgData,
+            borderColor: palette.color,
+            backgroundColor: palette.bg,
+            borderWidth: 3,
+            tension: 0.35,
+            fill: true,
+            pointBackgroundColor: palette.color,
+            pointRadius: 5,
+            pointHoverRadius: 7
+          },
+          {
+            label: `Total ${palette.label} Wastage (kg)`,
+            data: totalData,
+            borderColor: '#818cf8',
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            borderDash: [5, 5],
+            tension: 0.35,
+            pointBackgroundColor: '#818cf8',
+            pointRadius: 4
+          }
+        ];
+      }
+
+      trendChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: displayLabels,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            intersect: false,
+            mode: 'index'
+          },
+          plugins: {
+            legend: {
+              labels: { color: '#94a3b8', font: { family: 'Inter', size: 12 } }
+            },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              titleColor: '#f8fafc',
+              bodyColor: '#cbd5e1',
+              borderColor: 'rgba(255,255,255,0.1)',
+              borderWidth: 1,
+              callbacks: {
+                label: function(context) {
+                  return ` ${context.dataset.label}: ${context.parsed.y} kg`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', font: { family: 'Inter', size: 11 } }
+            },
+            y: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', font: { family: 'Inter' } },
+              title: { display: true, text: 'Wastage in Kilograms (kg)', color: '#64748b' }
+            }
+          }
+        }
+      });
+    }
+
+    // 2. Correlation Table
+    async function loadItemCorrelation() {
+      try {
+        const res = await fetch('/api/analytics/item-correlation');
+        const data = await res.json();
+        const tbody = document.getElementById('correlationBody');
+
+        if (!data || data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No correlation data found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.map(item => `
+          <tr>
+            <td><strong style="text-transform: capitalize; color: var(--text-primary);">${item.mealType}</strong></td>
+            <td><span class="pill-badge" style="background: rgba(248, 113, 113, 0.15); color: #fca5a5;">${item.avgWastageKg} kg</span></td>
+            <td><span class="pill-badge" style="background: rgba(251, 191, 36, 0.15); color: #fde047;">★ ${item.avgRating} / 5</span></td>
+            <td>${item.mealsAnalyzed}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('Failed to load item correlation:', err);
+      }
+    }
+
+    // 3. Top Wasted Items Table
+    async function loadTopWastedItems() {
+      try {
+        const res = await fetch('/api/analytics/top-wasted-items');
+        const data = await res.json();
+        const tbody = document.getElementById('topWastedBody');
+
+        if (!data || data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No records found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.map(item => `
+          <tr>
+            <td><strong style="color: var(--text-primary);">${item.itemName}</strong></td>
+            <td><span class="pill-badge count">${item.totalQtyServedKg} kg</span></td>
+            <td>${item.timesServed} meals</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('Failed to load top wasted items:', err);
+      }
+    }
+
+    // 4. Top Tags List
+    async function loadTopTags() {
+      try {
+        const res = await fetch('/api/analytics/top-tags');
+        const data = await res.json();
+        const container = document.getElementById('topTagsContainer');
+
+        if (!data || data.length === 0) {
+          container.innerHTML = '<p style="color: var(--text-muted);">No student tags found.</p>';
+          return;
+        }
+
+        container.innerHTML = data.map(t => `
+          <div class="tag-item">
+            <span class="pill-badge tag"># ${t.tag}</span>
+            <span style="font-weight: 700; color: var(--text-primary);">${t.count}</span>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error('Failed to load top tags:', err);
+      }
+    }
+
+    // 5. Load Recent Meals for Feedback Select Dropdown
+    async function loadRecentMealsForFeedback() {
+      try {
+        const res = await fetch('/api/meallogs');
+        const meals = await res.json();
+        const select = document.getElementById('feedbackMealSelect');
+
+        if (!meals || meals.length === 0) {
+          select.innerHTML = '<option value="">No meals logged yet</option>';
+          return;
+        }
+
+        select.innerHTML = meals.slice(0, 30).map(m => {
+          const dateStr = new Date(m.timestamp).toLocaleDateString(undefined, {
+            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+          });
+          const itemsSummary = m.itemsServed ? m.itemsServed.map(i => i.name).join(', ') : 'No items listed';
+          return `<option value="${m._id}">[${m.mealType.toUpperCase()}] ${dateStr} — ${itemsSummary}</option>`;
+        }).join('');
+      } catch (err) {
+        console.error('Failed to load recent meals:', err);
+      }
+    }
+
+    // Staff Form Handler (Plain JS fetch POST)
+    async function handleMealSubmit(e) {
+      e.preventDefault();
+      const alertBox = document.getElementById('mealAlert');
+      const submitBtn = document.getElementById('mealSubmitBtn');
+      alertBox.className = 'alert-banner';
+      alertBox.style.display = 'none';
+
+      const mealType = document.getElementById('mealType').value;
+      const wastageKg = parseFloat(document.getElementById('wastageKg').value);
+
+      // Collect items served
+      const itemRows = document.querySelectorAll('#itemsBuilderContainer .item-row');
+      const itemsServed = [];
+      itemRows.forEach(row => {
+        const name = row.querySelector('.item-name').value;
+        const qtyServedKg = parseFloat(row.querySelector('.item-qty').value);
+        if (name && !isNaN(qtyServedKg)) {
+          itemsServed.push({ name, qtyServedKg });
+        }
+      });
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Logging meal...';
+
+      try {
+        const res = await fetch('/api/meallogs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mealType,
+            wastageKg,
+            itemsServed
+          })
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+          alertBox.className = 'alert-banner success';
+          alertBox.innerText = `✓ Meal log saved successfully! ID: ${result._id}`;
+          alertBox.style.display = 'block';
+          document.getElementById('mealLogForm').reset();
+          document.getElementById('itemsBuilderContainer').innerHTML = '';
+          addItemRow();
+          await refreshAllData();
+        } else {
+          alertBox.className = 'alert-banner error';
+          alertBox.innerText = `✕ Error: ${result.error || 'Failed to log meal'}`;
+          alertBox.style.display = 'block';
+        }
+      } catch (err) {
+        alertBox.className = 'alert-banner error';
+        alertBox.innerText = `✕ Network error: ${err.message}`;
+        alertBox.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Save Meal Log to Time Series';
+      }
+    }
+
+    // Student Feedback Handler (Plain JS fetch POST)
+    async function handleFeedbackSubmit(e) {
+      e.preventDefault();
+      const alertBox = document.getElementById('feedbackAlert');
+      const submitBtn = document.getElementById('feedbackSubmitBtn');
+      alertBox.className = 'alert-banner';
+      alertBox.style.display = 'none';
+
+      const mealLogId = document.getElementById('feedbackMealSelect').value;
+      const rating = parseInt(document.getElementById('feedbackRating').value, 10);
+      const tag = document.getElementById('feedbackTag').value;
+      const comment = document.getElementById('feedbackComment').value;
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Submitting feedback...';
+
+      try {
+        const res = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mealLogId,
+            rating,
+            tags: [tag],
+            comment
+          })
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+          alertBox.className = 'alert-banner success';
+          alertBox.innerText = `✓ Thank you! Student feedback logged. ID: ${result._id}`;
+          alertBox.style.display = 'block';
+          document.getElementById('feedbackForm').reset();
+          await refreshAllData();
+        } else {
+          alertBox.className = 'alert-banner error';
+          alertBox.innerText = `✕ Error: ${result.error || 'Failed to submit feedback'}`;
+          alertBox.style.display = 'block';
+        }
+      } catch (err) {
+        alertBox.className = 'alert-banner error';
+        alertBox.innerText = `✕ Network error: ${err.message}`;
+        alertBox.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Submit Student Feedback';
+      }
+    }
+  </script>
 </body>
 </html>
